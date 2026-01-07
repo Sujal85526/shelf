@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+\{% extends 'base.html' %}
 
 {% block title %}{{ book.title }}{% endblock %}
 
@@ -12,7 +12,7 @@
 <p><strong>Author:</strong> {{ book.author }}</p>
 <p><strong>Genre:</strong> {{ book.genre }}</p>
 <p><strong>ISBN:</strong> {{ book.isbn|default:"N/A" }}</p>
-<p><strong>Submitted by:</strong> {{ book.submitted_by.username }}</p>
+<p><strong>Submitted by:</strong> {{ book.submitted_by.username|capfirst }}</p>
 <p><strong>Average Rating:</strong> {{ book.average_rating|floatformat:1 }}/5</p>
 <p>{{ book.description }}</p>
 
@@ -33,17 +33,70 @@
 
 {% if reviews %}
     {% for review in reviews %}
-        <div style="border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
-            <p><strong>{{ review.user.username }}</strong> - Rating: {{ review.rating }}/5 ⭐</p>
-            <p>{{ review.text }}</p>
-            <small>{{ review.created_at|date:"M d, Y" }}</small>
+        <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 20px;">
+            <div>
+                <p><strong>{{ review.user.username|capfirst }}</strong> - Rating: {{ review.rating }}/5 ⭐</p>
+                <p>{{ review.text }}</p>
+                <small>{{ review.created_at|date:"M d, Y" }}</small>
+                
+                {% if user == review.user %}
+                    <div style="margin-top: 10px;">
+                        <a href="{% url 'review_update' review.pk %}">Edit</a> | 
+                        <a href="{% url 'review_delete' review.pk %}">Delete</a>
+                    </div>
+                {% endif %}
+            </div>
             
-            {% if user == review.user %}
-                <div style="margin-top: 10px;">
-                    <a href="{% url 'review_update' review.pk %}">Edit</a> | 
-                    <a href="{% url 'review_delete' review.pk %}">Delete</a>
-                </div>
-            {% endif %}
+            <!-- ✅ PERFECT TREE STRUCTURE COMMENTS -->
+            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                <h5>Comments ({{ review.comments.count }})</h5>
+                
+                {% for tree_item in review.comment_tree %}
+                    <!-- PARENT COMMENT -->
+                    <div style="padding: 12px; border: 1px solid #ddd; margin-bottom: 10px; background: white;">
+                        <small style="color: #666;">
+                            <strong>{{ tree_item.comment.user.username|capfirst }}</strong> - {{ tree_item.comment.created_at|date:"M d" }}
+                        </small>
+                        <p style="margin: 8px 0;">{{ tree_item.comment.text }}</p>
+                        
+                        <!-- NESTED REPLIES WITH DELETE -->
+                        {% for reply in tree_item.replies %}
+                            <div style="padding: 10px; padding-left: 45px; background: #f8f9fa; margin: 5px 0; border-left: 3px solid #007bff;">
+                                <small style="color: #666;">
+                                    <strong>{{ reply.user.username|capfirst }}</strong> 
+                                    <span style="color: #007bff;">→ Reply</span> - {{ reply.created_at|date:"M d" }}
+                                </small>
+                                <p style="margin: 5px 0;">{{ reply.text }}</p>
+                                
+                                <!-- REPLY DELETE BUTTON -->
+                                {% if user == reply.user %}
+                                    <div style="margin-top: 5px;">
+                                        <a href="{% url 'comment_delete' reply.pk %}" style="font-size: 0.8em; color: #dc3545; text-decoration: none;">Delete</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        
+                        <!-- PARENT ACTION BUTTONS -->
+                        <div style="margin-top: 8px;">
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'comment_reply' review.pk tree_item.comment.pk %}" style="font-size: 0.85em; color: #007bff;">Reply</a>
+                            {% endif %}
+                            {% if user == tree_item.comment.user %}
+                                <a href="{% url 'comment_delete' tree_item.comment.pk %}" style="font-size: 0.85em; margin-left: 15px; color: #dc3545;">Delete</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <small style="color: #666;">No comments yet.</small>
+                {% endfor %}
+                
+                {% if user.is_authenticated %}
+                    <div style="margin-top: 15px;">
+                        <a href="{% url 'comment_create' review.pk %}" style="font-size: 0.9em; color: #28a745;">+ Add comment</a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     {% endfor %}
 {% else %}

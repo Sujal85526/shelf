@@ -21,7 +21,7 @@
             <h2><a href="{% url 'book_detail' book.pk %}">{{ book.title }}</a></h2>
             <p><strong>Author:</strong> {{ book.author }}</p>
             <p><strong>Genre:</strong> {{ book.genre }}</p>
-            <p><strong>Submitted by:</strong> {{ book.submitted_by.username }}</p>
+            <p><strong>Submitted by:</strong> {{ book.submitted_by.username|capfirst }}</p>
             <p><strong>Average Rating:</strong> {{ book.average_rating|floatformat:1 }}/5</p>
         </div>
     {% endfor %}

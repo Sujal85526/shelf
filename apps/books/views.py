@@ -18,6 +18,26 @@ def book_list(request):
 def book_detail(request, pk):
     book = get_object_or_404(Book, pk=pk)
     reviews = book.reviews.all()
+    
+    # BUILD TREE STRUCTURE - NO MODEL ASSIGNMENT
+    for review in reviews:
+        # Get top-level comments
+        top_level_comments = review.comments.filter(parent__isnull=True).order_by('created_at')
+        
+        # For each top-level comment, find its replies
+        comment_tree = []
+        all_comments = review.comments.all()
+        
+        for comment in top_level_comments:
+            # Create dict with comment and its replies
+            tree_item = {
+                'comment': comment,
+                'replies': [c for c in all_comments if c.parent == comment]
+            }
+            comment_tree.append(tree_item)
+        
+        review.comment_tree = comment_tree
+    
     return render(request, 'books/book_detail.html', {'book': book, 'reviews': reviews})
 
 @login_required
