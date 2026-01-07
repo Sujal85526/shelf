@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if review %}Edit{% else %}Add{% endif %} Review{% endblock %}
+
+{% block content %}
+<h1>{% if review %}Edit{% else %}Write a{% endif %} Review for "{{ book.title }}"</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Review</button>
+    <a href="{% url 'book_detail' book.pk %}">Cancel</a>
+</form>
+{% endblock %}

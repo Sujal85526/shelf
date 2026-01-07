@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if book %}Edit{% else %}Add{% endif %} Book{% endblock %}
+
+{% block content %}
+<h1>{% if book %}Edit{% else %}Add New{% endif %} Book</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+    <a href="{% if book %}{% url 'book_detail' book.pk %}{% else %}{% url 'book_list' %}{% endif %}">Cancel</a>
+</form>
+{% endblock %}
