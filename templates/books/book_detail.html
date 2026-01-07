@@ -1,4 +1,4 @@
-\{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}{{ book.title }}{% endblock %}
 
@@ -45,9 +45,29 @@
                         <a href="{% url 'review_delete' review.pk %}">Delete</a>
                     </div>
                 {% endif %}
+
+                <!-- 🆕 PHASE 6 VOTING - ADDED HERE -->
+                <div style="margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                    <span>💬 {{ review.comments.count }} comments</span> • 
+                    <span style="color: #28a745; font-weight: bold;">👍 {{ review.helpful_count|default:0 }} helpful</span>
+                    
+                    {% if user.is_authenticated %}
+                        {% if review.vote_for_user %}
+                            {% if review.vote_for_user.vote_type == 'up' %}
+                                <span style="margin-left: 10px; padding: 4px 8px; background: #d4edda; color: #155724; border-radius: 12px; font-size: 0.85em;">✓ Voted</span>
+                            {% else %}
+                                <span style="margin-left: 10px; padding: 4px 8px; background: #f8d7da; color: #721c24; border-radius: 12px; font-size: 0.85em;">✗ Downvoted</span>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'review_vote' review.pk %}?vote_type=up" 
+                               style="margin-left: 10px; padding: 6px 12px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; font-size: 0.9em;" 
+                               onclick="return confirm('Mark as helpful?')">Vote helpful</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
             
-            <!-- ✅ PERFECT TREE STRUCTURE COMMENTS -->
+            <!-- ✅ PERFECT TREE STRUCTURE COMMENTS (UNCHANGED) -->
             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
                 <h5>Comments ({{ review.comments.count }})</h5>
                 

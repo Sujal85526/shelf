@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from apps.votes import views as votes_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +27,8 @@ urlpatterns = [
     path('reviews/', include('apps.reviews.urls')),
     path('comments/', include('apps.comments.urls')),
     path('', include('apps.books.urls')),
+    path('review/<int:pk>/vote/', votes_views.vote_review, name='review_vote'),
+
 ]
 
 if settings.DEBUG:

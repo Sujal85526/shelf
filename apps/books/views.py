@@ -37,6 +37,8 @@ def book_detail(request, pk):
             comment_tree.append(tree_item)
         
         review.comment_tree = comment_tree
+
+        review.request = request  # Attach request to review for vote lookup
     
     return render(request, 'books/book_detail.html', {'book': book, 'reviews': reviews})
 
