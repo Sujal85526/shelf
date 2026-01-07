@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.votes import views as votes_views
+from profiles import views as profiles_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +29,7 @@ urlpatterns = [
     path('comments/', include('apps.comments.urls')),
     path('', include('apps.books.urls')),
     path('review/<int:pk>/vote/', votes_views.vote_review, name='review_vote'),
+    path('profiles/<str:username>/', profiles_views.profile_detail, name='profile_detail'),
 
 ]
 

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+    <!-- PROFILE HEADER -->
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1 style="font-size: 2.5em; margin-bottom: 10px;">{{ profile_user.username }}</h1>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; display: inline-block;">
+            <p><strong>{{ total_books }}</strong> Books • <strong>{{ total_reviews }}</strong> Reviews • <strong>{{ total_votes }}</strong> Votes</p>
+        </div>
+    </div>
+
+    <!-- USER'S BOOKS -->
+    {% if user_books %}
+        <div style="margin-bottom: 40px;">
+            <h2 style="font-size: 1.8em; margin-bottom: 20px; border-bottom: 2px solid #28a745; padding-bottom: 10px;">Their Books ({{ total_books }})</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                {% for book in user_books %}
+                    <a href="{% url 'book_detail' book.pk %}" style="text-decoration: none; color: inherit;">
+                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; text-align: center;">
+                            {% if book.cover_image %}
+                                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 5px;">
+                            {% else %}
+                                <div style="width: 100%; height: 250px; background: #e9ecef; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #6c757d;">No Cover</div>
+                            {% endif %}
+                            <h3 style="margin: 10px 0 5px 0; font-size: 1.1em;">{{ book.title|truncatewords:4 }}</h3>
+                            <p style="color: #6c757d; margin: 0;">{{ book.author }}</p>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- USER'S REVIEWS -->
+    {% if user_reviews %}
+        <div>
+            <h2 style="font-size: 1.8em; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">Recent Reviews ({{ total_reviews }})</h2>
+            {% for review in user_reviews %}
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; background: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <div>
+                            <span style="color: #ffc107; font-size: 1.2em;">★ {{ review.rating }}</span>
+                            <a href="{% url 'book_detail' review.book.pk %}" style="margin-left: 15px; font-weight: bold; color: #007bff;">{{ review.book.title|truncatewords:4 }}</a>
+                        </div>
+                        <small style="color: #6c757d;">{{ review.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    <p style="margin: 10px 0; line-height: 1.6;">{{ review.text|truncatewords:25 }}</p>
+                    <div style="color: #28a745; font-weight: bold;">
+                        💬 {{ review.comments.count }} comments • 👍 {{ review.helpful_count }} helpful
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align: center; color: #6c757d; font-style: italic;">No reviews yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

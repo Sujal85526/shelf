@@ -22,7 +22,9 @@
         <a href="{% url 'book_list' %}">Home</a>
         {% if user.is_authenticated %}
             <span style="float: right;">
-                <span>Hi, {{ user.username|capfirst }}</span>
+                <a href="{% url 'profile_detail' user.username %}" style="color: #007bff; font-weight: 500; text-decoration: none; margin-right: 15px;">
+                    {{ user.username|capfirst }}
+                </a>
                 <a href="{% url 'logout' %}">Logout</a>
             </span>
         {% else %}
