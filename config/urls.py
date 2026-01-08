@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.votes import views as votes_views
-from profiles import views as profiles_views
+from apps.profiles import views as profiles_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
